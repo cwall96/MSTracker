@@ -34,17 +34,16 @@ const StudyInformationScreen = () => {
           <Text style={styles.heading}>Study Website</Text>
           <Text style={styles.text}>
             Visit the study website by{' '}
-            <Pressable onPress={() => Linking.openURL('https://www.youtube.com/watch?v=TmWVsESrqjk')}>
+            <Pressable onPress={() => Linking.openURL('https://raw.githubusercontent.com/cwall96/msapp/main/PIS_final.pdf')}>
               <Text style={[styles.text, styles.textlined]}>clicking here</Text>
             </Pressable>
-            .
           </Text>
         </View>
 
         <View style={styles.padded}>
           <Text style={styles.heading}>Ethical Approval</Text>
           <Text style={styles.text}>
-            This study was approved by the Northumbria University Health and Life Sciences Ethics Committee (reference number: xxxxxx).
+            This study was approved by the Northumbria University Health and Life Sciences Ethics Committee (reference number: 9764).
           </Text>
         </View>
 
@@ -63,7 +62,7 @@ const StudyInformationScreen = () => {
 
         <Pressable
           style={styles.button}
-          onPress={() => Linking.openURL('https://www.youtube.com/watch?v=TmWVsESrqjk')}
+          onPress={() => Linking.openURL('https://raw.githubusercontent.com/cwall96/msapp/main/PIS_final.pdf')}
         >
           <Text style={styles.buttonText}>Participant Information Sheet</Text>
         </Pressable>

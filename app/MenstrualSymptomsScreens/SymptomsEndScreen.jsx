@@ -13,8 +13,6 @@ import { getdb } from 'components/BackendEssentials';
 
 const auth = getAuth();
 
-const user = auth.currentUser;
-
 const SymptomsEndScreen = () => {
   const list1 = [
     'Changes to / difficulties in breathing',
@@ -76,7 +74,12 @@ const SymptomsEndScreen = () => {
     if (checked === null) {
       Alert.alert("Please select Yes or No");
     } else {
-      updatedbFeedback(user, "menstrualIsOtherSymptoms", "menstrualOtherFeedback", checked, text);
+      const currentUser = getAuth().currentUser;
+      if (!currentUser) {
+        Alert.alert("Error", "User not authenticated");
+        return;
+      }
+      updatedbFeedback(currentUser, "menstrualIsOtherSymptoms", "menstrualOtherFeedback", checked, text);
       router.push(destination);
     }
   };
@@ -98,30 +101,29 @@ const SymptomsEndScreen = () => {
 
         <Text style={styles.heading}>Do you suffer from any other symptoms not listed above?</Text>
 
-        <View style={styles.checkboxContainer}>
-          <Checkbox
-            status={checked === '1' ? 'checked' : 'unchecked'}
-            onPress={() => setChecked('1')}
-            color="#E97132"
-            uncheckedColor="#E97132"
-            style={styles.checkbox}
-            backgroundColor= '#ffffff'
-          />
-          <Text style={styles.text}>Yes</Text>
-        </View>
+        <View style={styles.checkboxWrapper}>
+          <View style={styles.checkboxContainer}>
+            <Checkbox
+              status={checked === '1' ? 'checked' : 'unchecked'}
+              onPress={() => setChecked('1')}
+              color="#E97132"
+              uncheckedColor="#E97132"
+              style={styles.checkbox}
+            />
+            <Text style={styles.checkboxLabel}>Yes</Text>
+          </View>
 
-        <View style={styles.checkboxContainer}>
-          <Checkbox
-            status={checked === '0' ? 'checked' : 'unchecked'}
-            onPress={() => setChecked('0')}
-            color="#E97132"
-            uncheckedColor="#E97132"
-            style={styles.checkbox}
-            backgroundColor='#ffffff'
-          />
-          <Text style={styles.text}>No</Text>
+          <View style={styles.checkboxContainer}>
+            <Checkbox
+              status={checked === '0' ? 'checked' : 'unchecked'}
+              onPress={() => setChecked('0')}
+              color="#E97132"
+              uncheckedColor="#E97132"
+              style={styles.checkbox}
+            />
+            <Text style={styles.checkboxLabel}>No</Text>
+          </View>
         </View>
-
         <Text style={styles.heading}>If you selected Yes, please specify (…/300 characters):</Text>
         <TextInput
           editable
@@ -132,6 +134,7 @@ const SymptomsEndScreen = () => {
           numberOfLines={4}
           maxLength={maxLength}
           style={styles.textInput}
+          
         />
         <Text style={styles.characterCounter}>{text.length} / {maxLength}</Text>
 
@@ -208,9 +211,14 @@ const styles = StyleSheet.create({
   heading: { fontWeight: 'bold', fontSize: 14 },
   boxContainer: { marginTop: 10, flexDirection: 'row' },
   textInput: {
-    width: '90%', height: 120, borderRadius: 20,
-    borderColor: '#d35400', backgroundColor: 'lightcoral',
-    fontSize: 14, color: 'black', marginVertical: 20,
+    width: '100%',
+    height: 120,
+    borderRadius: 20,
+    borderColor: '#d35400',
+    backgroundColor: 'white',
+    fontSize: 14,
+    color: 'black',
+    marginVertical: 20,
   },
   characterCounter: { textAlign: 'center', color: 'black', marginVertical: 5 },
   button: {
@@ -228,6 +236,18 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     paddingHorizontal: 10,
   },
+
+  checkboxWrapper: {
+    flexDirection: 'column',
+    gap: 10,
+    paddingVertical: 10,
+  },
+  checkboxLabel: {
+    fontSize: 16,
+    color: 'black',
+    paddingLeft: 10,
+  },
+
   
   checkbox: {
     transform: [{ scale: 0.2 }],

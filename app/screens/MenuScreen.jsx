@@ -5,6 +5,39 @@ import { getdb } from 'components/BackendEssentials';
 import { getAuth } from 'firebase/auth';
 import { useEffect, useState } from 'react';
 import { firebaseAuth } from 'firebaseconfig';
+import * as Device from 'expo-device';
+import * as Notifications from 'expo-notifications';
+import { Platform } from 'react-native';
+import { firestoreDb } from 'firebaseconfig'; // update this to your config
+import { doc, setDoc } from 'firebase/firestore';
+
+
+const registerForPushNotificationsAsync = async () => {
+  if (Platform.OS === 'web') return; // ⛔️ Skip web
+
+  if (!Device.isDevice) {
+    alert('Must use physical device for push notifications');
+    return;
+  }
+
+  const { status: existingStatus } = await Notifications.getPermissionsAsync();
+  let finalStatus = existingStatus;
+
+  if (existingStatus !== 'granted') {
+    const { status } = await Notifications.requestPermissionsAsync();
+    finalStatus = status;
+  }
+
+  if (finalStatus !== 'granted') {
+    alert('Failed to get push token');
+    return;
+  }
+
+  const tokenData = await Notifications.getExpoPushTokenAsync();
+  console.log('Push Token:', tokenData.data);
+
+  // Save token to Firestore or your backend
+};
 
 const MenuScreen = () => {
   const auth = getAuth();
@@ -39,6 +72,7 @@ const MenuScreen = () => {
     };
   
     fetchData();
+    registerForPushNotificationsAsync();
   }, []);
 
   const renderCycleButton = () => {
@@ -54,6 +88,7 @@ const MenuScreen = () => {
       : 'MenstrualSymptomsScreens/SymptomsStartScreen';
 
     const isDisabled = cycleCompleted;
+    
 
     return (
       <View style={styles.padded}>
@@ -73,6 +108,15 @@ const MenuScreen = () => {
       </View>
     );
   };
+
+  const handleLogout = async () => {
+    try {
+      await auth.signOut();
+      router.replace('/'); // or wherever your login screen is
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+    };
 
   const renderMsButton = () => (
     <View style={styles.padded}>
@@ -126,6 +170,8 @@ const MenuScreen = () => {
         {/* Female-specific cycle button */}
         {renderCycleButton()}
 
+        
+
         {/* My Symptoms Page */}
         <View style={styles.padded}>
           <Pressable
@@ -143,6 +189,15 @@ const MenuScreen = () => {
             onPress={() => router.push('screens/StudyInformationScreen')}
           >
             <Text style={styles.buttonText}>Study Information</Text>
+          </Pressable>
+        </View>
+
+        <View style={styles.padded}>
+          <Pressable
+            style={[styles.button, { backgroundColor: 'lightgrey' }]}
+            onPress={handleLogout}
+          >
+            <Text style={styles.buttonText}>Log Out</Text>
           </Pressable>
         </View>
 

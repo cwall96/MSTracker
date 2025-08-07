@@ -1,7 +1,6 @@
 import Checkbox from 'expo-checkbox';
 import { useState } from 'react';
 import {
-  FlatList,
   Text,
   View,
   StyleSheet,
@@ -10,10 +9,11 @@ import {
   Linking,
   ScrollView,
 } from 'react-native';
-import { Link, router } from 'expo-router';
+import { router } from 'expo-router';
 import BackgroundGradient from 'components/BackgroundGradient';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { firebaseAuth } from 'firebaseconfig';
+import { firebaseAuth, firebaseData } from 'firebaseconfig'; // ✅ correct imports
+import { doc, setDoc } from 'firebase/firestore';
 
 export default function ConsentFormScreen() {
   const [checkboxes, setCheckboxes] = useState([
@@ -25,7 +25,7 @@ export default function ConsentFormScreen() {
           <Text
             style={styles.textLined}
             onPress={() =>
-              Linking.openURL('https://www.youtube.com/watch?v=TmWVsESrqjk')
+              Linking.openURL('https://raw.githubusercontent.com/cwall96/msapp/main/PIS_final.pdf')
             }
           >
             the information sheet
@@ -72,9 +72,21 @@ export default function ConsentFormScreen() {
   async function checker() {
     const checkedCount = checkboxes.filter((box) => box.checked).length;
     if (checkedCount === 6) {
-      const userEmail = firebaseAuth.currentUser.email;
-      await AsyncStorage.setItem(`consent_${userEmail}`, 'true');
-      router.push('/screens/MenuScreen');
+      const user = firebaseAuth.currentUser;
+
+      if (user) {
+        const userRef = doc(firebaseData, 'users', user.uid); // ✅ correct Firestore usage
+
+        // Save consent flag to Firestore
+        await setDoc(userRef, { hasConsented: true }, { merge: true });
+
+        // Save locally too
+        await AsyncStorage.setItem(`consent_${user.email}`, 'true');
+
+        router.push('/screens/MenuScreen');
+      } else {
+        Alert.alert('User not authenticated');
+      }
     } else {
       Alert.alert('Please tick all boxes');
     }
@@ -111,7 +123,6 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 24,
     paddingTop: 40,
-
   },
   title: {
     fontWeight: 'bold',
@@ -128,7 +139,6 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     marginBottom: 40,
     paddingHorizontal: 10,
-
   },
   checkbox: {
     marginTop: 4,

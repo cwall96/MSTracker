@@ -1,16 +1,19 @@
 import MsTitle from 'components/MsTitle';
 import { FlatList, ScrollView, Text, View, Button, Alert, Pressable } from 'react-native';
 import { StyleSheet } from 'react-native';
-import React, { useState } from 'react';
+
 import { Checkbox, TextInput } from 'react-native-paper';
 import Footer from 'components/BackOnlyFooter';
 import {router} from "expo-router";
 import BackgroundGradient from 'components/BackgroundGradient';
 import {updatedb, updatedbFeedback} from 'components/BackendEssentials';
 import { getAuth } from 'firebase/auth';
-
+import React, { useState, useEffect } from 'react';
+import { firebaseAuth } from 'firebaseconfig';
+import { getdb } from 'components/BackendEssentials';
 const auth = getAuth();
 const user = auth.currentUser;
+
 
 
 const FeedbackScreen = () => {
@@ -38,6 +41,26 @@ const FeedbackScreen = () => {
     'Mood changes / irritability / anxiety',
   ];
 
+  useEffect(() => {
+    const fetchData = async () => {
+      const user = firebaseAuth.currentUser;
+      const formattedDate = new Date().toISOString().split('T')[0];
+
+      try {
+        const data = await getdb(user, formattedDate);
+
+        if (data) {
+          const msFields = Object.keys(data).filter(key => key.startsWith("ms"));
+          setMsCompleted(msFields.length > 0);
+          
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+    fetchData();
+  }, []);
+
   const renderListItem = ({ item }) => (
     <View style={styles.listItem}>
       <Text style={styles.bullet}>{'\u2022'}</Text>
@@ -45,6 +68,8 @@ const FeedbackScreen = () => {
     </View>
   );
   const [checked, setChecked] = useState(null);
+
+  const [msCompleted, setMsCompleted] = useState(false);
 
   const [text, onChangeText] = React.useState('');
   const maxLength = 300;
@@ -58,6 +83,20 @@ const FeedbackScreen = () => {
   }
 }
 
+const handleNavigation = (destination) => {
+    if (checked === null) {
+      Alert.alert("Please select Yes or No");
+    } else {
+      const currentUser = getAuth().currentUser;
+      if (!currentUser) {
+        Alert.alert("Error", "User not authenticated");
+        return;
+      }
+      updatedbFeedback(currentUser, "menstrualIsOtherSymptoms", "menstrualOtherFeedback", checked, text);
+      router.push(destination);
+    }
+  };
+
   return (
     <>
       <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
@@ -65,7 +104,7 @@ const FeedbackScreen = () => {
         <MsTitle titleName="Hormonal Contraceptive Cycle Symptoms" />
 
         <Text style={styles.heading}>
-          As a reminder, this is the list of Menstrual Cycle Symptoms covered by this questionnaire:
+          As a reminder, this is the list of Hormonal Contraceptive Cycle Symptoms covered by this questionnaire:
         </Text>
 
         <View style={styles.listsContainer}>
@@ -133,12 +172,38 @@ const FeedbackScreen = () => {
           Thank you for reporting your Hormonal Contraceptive Cycle symptoms today!
         </Text>
 
-        
+        <Pressable
+            style={[
+              styles.button,
+              {
+                backgroundColor: msCompleted ? '#ccc' : 'orangered',
+                marginTop: 12,
+              },
+            ]}
+            onPress={() => !msCompleted && router.push("MsSymptomsScreens/MsSymptomsStartScreen")}
+            disabled={msCompleted}
+          >
+            <Text style={styles.buttonText}>Report MS Symptoms</Text>
+            {msCompleted && (
+              <Text style={{ textAlign: 'center', marginTop: 4 }}>
+                You have already completed this today
+              </Text>
+            )}
+        </Pressable>
 
+    
         <Pressable
           style={[styles.button, { backgroundColor: 'lightsalmon', marginTop: 20 }]}
-          onPress={() => {
-            updatedbFeedback(user, "hormonalIsOtherSymptoms", "hormonalOtherFeedback", checked, text);
+          onPress={async () => {
+            const auth = getAuth();
+            const user = auth.currentUser;
+
+            if (!user) {
+              Alert.alert("User not authenticated");
+              return;
+            }
+
+            await updatedbFeedback(user, "hormonalIsOtherSymptoms", "hormonalOtherFeedback", checked, text);
             checker("screens/MySymptomsScreen");
           }}
         >
@@ -147,14 +212,29 @@ const FeedbackScreen = () => {
 
         <Pressable
           style={[styles.button, { backgroundColor: 'mistyrose', marginTop: 10 }]}
-          onPress={() => {
-            updatedbFeedback(user, "hormonalIsOtherSymptoms", "hormonalOtherFeedback", checked, text);
-            checker("screens/StudyInformationScreen");
-          }}
+          onPress={async () => {
+              const auth = getAuth();
+              const user = auth.currentUser;
+
+              if (!user) {
+                Alert.alert("User not authenticated");
+                return;
+              }
+
+              await updatedbFeedback(user, "hormonalIsOtherSymptoms", "hormonalOtherFeedback", checked, text);
+              checker("screens/StudyInformationScreen");
+            }}
         >
           <Text style={styles.buttonText}>Study Information</Text>
         </Pressable>
 
+        {/* Home */}
+        <Pressable
+          style={[styles.button, { backgroundColor: 'lightblue' }]}
+          onPress={() => handleNavigation("screens/MenuScreen")}
+        >
+          <Text style={styles.buttonText}>Go to Home Screen</Text>
+        </Pressable>
           <View style = {{padding:25}}/>
 
       </ScrollView>

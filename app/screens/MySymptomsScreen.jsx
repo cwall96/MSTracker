@@ -45,63 +45,66 @@ export default function MySymptomsScreen() {
   
   useEffect(() => {
     const fetchData = async (user) => {
-      const today = new Date();
-  
-      const actualDates = [];
-      const tempSymptoms = {};
-      const tempMsSymptoms = {};
-      const tempHormonalSymptoms = {};
-      const tempBleedingAmounts = {};
-      const tempHormonalBleedingAmounts = {};
-      let genderFound = null;
-      let cycleTypeFound = null;
-  
-      for (let i = 60; i >= 0; i--) {
-        const date = new Date();
-        date.setDate(today.getDate() - i);
-        const isoDate = date.toISOString().split("T")[0];
-  
-        const data = await getdb(user, isoDate);
-        if (data) {
-          actualDates.push(isoDate);
-  
-          if (!genderFound && data.sex) {
-            genderFound = data.sex;
-          }
-  
-          if (!cycleTypeFound && data.sex === "Female" && data.cycleType) {
-            cycleTypeFound = data.cycleType;
+    const today = new Date();
+
+    const datesToFetch = Array.from({ length: 61 }, (_, i) => {
+      const date = new Date();
+      date.setDate(today.getDate() - (60 - i));
+      return date.toISOString().split("T")[0];
+    });
+
+    // Run all fetches in parallel
+    const dataResponses = await Promise.all(
+      datesToFetch.map(date => getdb(user, date))
+    );
+
+    const actualDates = [];
+    const tempSymptoms = {};
+    const tempMsSymptoms = {};
+    const tempHormonalSymptoms = {};
+    const tempBleedingAmounts = {};
+    const tempHormonalBleedingAmounts = {};
+
+    let genderFound = null;
+    let cycleTypeFound = null;
+
+      dataResponses.forEach((data, i) => {
+        const isoDate = datesToFetch[i];
+        if (!data) return;
+
+        actualDates.push(isoDate);
+
+        if (!genderFound && data.sex) genderFound = data.sex;
+        if (!cycleTypeFound && data.sex === "Female" && data.cycleType) {
+          cycleTypeFound = data.cycleType;
+        }
+
+        for (const key in data) {
+          if (key.startsWith("menstrual") && key.endsWith("Severity")) {
+            if (!tempSymptoms[key]) tempSymptoms[key] = {};
+            tempSymptoms[key][isoDate] = data[key];
           }
 
-          // Populate symptom maps
-          for (const key in data) {
-            if (key.startsWith("menstrual") && key.endsWith("Severity")) {
-              if (!tempSymptoms[key]) tempSymptoms[key] = {};
-              tempSymptoms[key][isoDate] = data[key];
-            }
-  
-            if (key.startsWith("ms")) {
-              if (!tempMsSymptoms[key]) tempMsSymptoms[key] = {};
-              tempMsSymptoms[key][isoDate] = data[key];
-            }
-  
-            if (key.startsWith("hormonal")) {
-              if (!tempHormonalSymptoms[key]) tempHormonalSymptoms[key] = {};
-              tempHormonalSymptoms[key][isoDate] = data[key];
-            }
+          if (key.startsWith("ms")) {
+            if (!tempMsSymptoms[key]) tempMsSymptoms[key] = {};
+            tempMsSymptoms[key][isoDate] = data[key];
+          }
 
-             // NEW: always grab the amount fields
-            if (key === "bleedingAmount") {
-                tempBleedingAmounts[isoDate] = data[key];
-              }
-              if (key === "hormonalBleedingAmount") {
-                tempHormonalBleedingAmounts[isoDate] = data[key];
-              }
+          if (key.startsWith("hormonal") && key.endsWith("Severity")) {
+            if (!tempHormonalSymptoms[key]) tempHormonalSymptoms[key] = {};
+            tempHormonalSymptoms[key][isoDate] = data[key];
+          }
+
+          if (key === "bleedingAmount") {
+            tempBleedingAmounts[isoDate] = data[key];
+          }
+
+          if (key === "hormonalBleedingAmount") {
+            tempHormonalBleedingAmounts[isoDate] = data[key];
           }
         }
-      }
-  
-      // Final state setting (assumes you’ve declared state hooks for all)
+      });
+
       setDates(actualDates);
       setSymptomMap(tempSymptoms);
       setMsSymptomMap(tempMsSymptoms);
@@ -115,7 +118,7 @@ export default function MySymptomsScreen() {
       setBleedingAmountMap(tempBleedingAmounts);
       setHormonalBleedingAmountMap(tempHormonalBleedingAmounts);
     };
-  
+    
     const unsubscribe = firebaseAuth.onAuthStateChanged(async (user) => {
       if (user) {
         await fetchData(user);
@@ -168,6 +171,12 @@ export default function MySymptomsScreen() {
       iso:    paddedDates.slice(startIndex, startIndex + 30),
     };
   };
+
+  const formatSymptomLabel = (key, prefix) =>
+      key
+        .replace(prefix, '')
+        .replace('Severity', '')
+        .replace(/([a-z])([A-Z])/g, '$1 $2'); // insert space before capital letters
   
   //overall
   const getSummedMsSymptomData = (msSymptomMap, dates) => {
@@ -182,6 +191,7 @@ export default function MySymptomsScreen() {
       return sum;
     });
   };
+  
   
   const msSymptomData =
   selectedMsSymptom === 'overall'
@@ -224,15 +234,10 @@ export default function MySymptomsScreen() {
       if (severities.length === 0) return null;
   
       const frequency = severities.length;
-
       
       const severity = getMode(severities);
 
       const total = frequency * severity
-
-      console.log(date , total)
-      console.log("Frequency: ", frequency) 
-      console.log("Severity: ", severity) 
   
       return total;
     });
@@ -275,27 +280,27 @@ export default function MySymptomsScreen() {
 
     // Picker options
     const msSymptomPickerData = [
-    { label: 'Overall', value: 'overall' },
-    ...Object.keys(msSymptomMap).map((key) => ({
-      label: key.replace("ms", "").replace("Severity", ""),
-      value: key,
-    })),
+      { label: 'Overall', value: 'overall' },
+      ...Object.keys(msSymptomMap).map((key) => ({
+        label: formatSymptomLabel(key, 'ms'),
+        value: key,
+      })),
     ];
 
     const hormonalSymptomPickerData = [
-    { label: 'Overall', value: 'overall' },
-    ...Object.keys(hormonalSymptomMap).map((key) => ({
-      label: key.replace("hormonal", "").replace("Severity", ""),
-      value: key,
-    })),
+      { label: 'Overall', value: 'overall' },
+      ...Object.keys(hormonalSymptomMap).map((key) => ({
+        label: formatSymptomLabel(key, 'hormonal'),
+        value: key,
+      })),
     ];
 
     const menstrualSymptomPickerData = [
-    { label: 'Overall', value: 'overall' },
-    ...Object.keys(symptomMap).map((key) => ({
-      label: key.replace("menstrual", "").replace("Severity", ""),
-      value: key,
-    })),
+      { label: 'Overall', value: 'overall' },
+      ...Object.keys(symptomMap).map((key) => ({
+        label: formatSymptomLabel(key, 'menstrual'),
+        value: key,
+      })),
     ];
 
   if (gender === "Male") {
@@ -321,7 +326,7 @@ export default function MySymptomsScreen() {
               marginHorizontal: 10,
               paddingVertical: 10,
               paddingHorizontal: 16,
-              backgroundColor: viewRangeMs === 'first' ? '#FFA388' : '#ccc',
+              backgroundColor: viewRangeMs === 'first' ? '#E27A57' : '#ccc',
               borderRadius: 6,
               textAlign: 'center',
               minWidth: 120, // Ensures buttons don't collapse
@@ -335,7 +340,7 @@ export default function MySymptomsScreen() {
               marginHorizontal: 10,
               paddingVertical: 10,
               paddingHorizontal: 16,
-              backgroundColor: viewRangeMs === 'second' ? '#FFA388' : '#ccc',
+              backgroundColor: viewRangeMs === 'second' ? '#E27A57' : '#ccc',
               borderRadius: 6,
               textAlign: 'center',
               minWidth: 120,
@@ -355,7 +360,7 @@ export default function MySymptomsScreen() {
               datasets: [
                 {
                   data: chartMs.values,
-                  color: (opacity = 1) => 'rgba(255, 226, 213, ${opacity})',
+                  color: (opacity = 1) => `rgba(255, 226, 213, ${opacity})`,
                   strokeWidth: 2,
                   withDots: true,
                 },
@@ -368,11 +373,11 @@ export default function MySymptomsScreen() {
             fromZero={true}
             segments={6}
             chartConfig={{
-              backgroundGradientFrom: "#B0E0E6",
-              backgroundGradientTo: "#E0FFFF",
+              backgroundGradientFrom: "#FFA388",
+              backgroundGradientTo: "#FFE1DB",
               decimalPlaces: 0,
-              color: (opacity = 1) => 'rgba(0,0,0,${opacity})',
-              labelColor: (opacity = 1) => 'rgba(0, 0, 0, ${opacity})',
+              color: (opacity = 1) => `rgba(0,0,0,${opacity})`,
+              labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
               propsForBackgroundLines: {
                 stroke: '#E0FFFF',
               },
@@ -383,6 +388,12 @@ export default function MySymptomsScreen() {
               propsForVerticalLabels: {
                 fontSize: 10,
                 rotation: 60,
+              },
+              propsForDots: {
+                r: '4',
+                strokeWidth: '1',
+                stroke: '#000000',
+                fill: '#000000',
               },
             }}
             bezier
@@ -481,7 +492,7 @@ export default function MySymptomsScreen() {
                 marginHorizontal: 10,
                 paddingVertical: 10,
                 paddingHorizontal: 16,
-                backgroundColor: viewRangeCycle === 'first' ? '#FFA388' : '#ccc',
+                backgroundColor: viewRangeCycle === 'first' ? '#E27A57' : '#ccc',
                 borderRadius: 6,
                 textAlign: 'center',
                 minWidth: 120, // Ensures buttons don't collapse
@@ -495,7 +506,7 @@ export default function MySymptomsScreen() {
                 marginHorizontal: 10,
                 paddingVertical: 10,
                 paddingHorizontal: 16,
-                backgroundColor: viewRangeCycle === 'second' ? '#FFA388' : '#ccc',
+                backgroundColor: viewRangeCycle === 'second' ? '#E27A57' : '#ccc',
                 borderRadius: 6,
                 textAlign: 'center',
                 minWidth: 120,
@@ -526,24 +537,24 @@ export default function MySymptomsScreen() {
                 datasets: [
                   {
                     data: chartCycle.values,
-                    color: (opacity = 1) => 'rgba(255, 226, 213, ${opacity})',
+                    color: (opacity = 1) => `rgba(255, 226, 213, ${opacity})`,
                     strokeWidth: 2,
                     withDots: true,
                   },
                   { data: [1], withDots: false },
-                  { data: [6], withDots: false },
+                  { data: [4], withDots: false },
                 ],
               }}
               width={screenWidth - 40}
               height={300}
               fromZero
-              segments={7}
+              segments={4}
               chartConfig={{
                 backgroundGradientFrom: "#FFA388",
                 backgroundGradientTo: "#FFE1DB",
                 decimalPlaces: 0,
-                color: (opacity = 1) => 'rgba(0,0,0,${opacity})',
-                labelColor: (opacity = 1) => 'rgba(0, 0, 0, ${opacity})',
+                color: (opacity = 1) => `rgba(0,0,0,${opacity})`,
+                labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
                 propsForBackgroundLines: { stroke: "#FFE1DB" },
                 propsForHorizontalLabels: { fontSize: 10, rotation: 45 },
                 propsForVerticalLabels:   { fontSize: 10, rotation: 60 },
@@ -585,7 +596,7 @@ export default function MySymptomsScreen() {
                 marginHorizontal: 10,
                 paddingVertical: 10,
                 paddingHorizontal: 16,
-                backgroundColor: viewRangeMs === 'first' ? '#FFA388' : '#ccc',
+                backgroundColor: viewRangeMs === 'first' ? '#E27A57' : '#ccc',
                 borderRadius: 6,
                 textAlign: 'center',
                 minWidth: 120, // Ensures buttons don't collapse
@@ -599,7 +610,7 @@ export default function MySymptomsScreen() {
                 marginHorizontal: 10,
                 paddingVertical: 10,
                 paddingHorizontal: 16,
-                backgroundColor: viewRangeMs === 'second' ? '#FFA388' : '#ccc',
+                backgroundColor: viewRangeMs === 'second' ? '#E27A57' : '#ccc',
                 borderRadius: 6,
                 textAlign: 'center',
                 minWidth: 120,
@@ -615,9 +626,6 @@ export default function MySymptomsScreen() {
           onValueChange={setSelectedMsSymptom}
           data={msSymptomPickerData}
         />
-        
-
-          
           <View style={styles.legendContainer}>
             <View style={styles.legendDot} />
             <Text style={styles.legendLabel}>Bleeding period</Text>
@@ -635,7 +643,7 @@ export default function MySymptomsScreen() {
                 datasets: [
                   {
                     data: chartMs.values,
-                    color: (opacity = 1) => 'rgba(255, 226, 213, ${opacity})',
+                    color: (opacity = 1) => `rgba(255, 226, 213, ${opacity})`,
                     strokeWidth: 2,
                     withDots: true,
                   },
@@ -651,8 +659,8 @@ export default function MySymptomsScreen() {
                 backgroundGradientFrom: "#B0E0E6",
                 backgroundGradientTo: "#E0FFFF",
                 decimalPlaces: 0,
-                color: (opacity = 1) => 'rgba(0,0,0,${opacity})',
-                labelColor: (opacity = 1) => 'rgba(0, 0, 0, ${opacity})',
+                color: (opacity = 1) => `rgba(0,0,0,${opacity})`,
+                labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
                 propsForBackgroundLines: {
                   stroke: '#E0FFFF',
                 },
@@ -751,29 +759,27 @@ const styles = StyleSheet.create({
   },
   padded: {
     paddingTop: 10,
-  },    
+  },
   yAxisLabelContainerMenstrual: {
     position: 'absolute',
-    left: -58, // Adjust as needed to place label outside Y-axis
-    top: '35%',
-    transform: [{ translateY: '-50%'}],
-    zIndex: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-    height: 280, // Match chart height if possible
-  },
-  
-  yAxisLabelContainerMs: {
-    position: 'absolute',
     left: -58,
-    top: '75%',
-    transform: [{ translateY: '-50%' }],
+    top: '35%',
+    transform: [{ translateY: -140 }], // 💡 FIXED: no percentage strings
     zIndex: 10,
     justifyContent: 'center',
     alignItems: 'center',
     height: 280,
   },
-
+  yAxisLabelContainerMs: {
+    position: 'absolute',
+    left: -58,
+    top: '75%',
+    transform: [{ translateY: -140 }], // 💡 FIXED
+    zIndex: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: 280,
+  },
   yAxisLabelContainerMsMale: {
     position: 'absolute',
     left: -55,
@@ -784,66 +790,57 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   yAxisLabel: {
-    fontSize: 16,
-    transform: [{ rotate: '-90deg' }],
-  },
-  imagecontainer: {
-    flexDirection: 'row',
-    height: 100,
-    marginBottom: 60,
-    width:"100%",
-  },
-  logo: {
-    flex: 1,
-    width: 0, // if undefined it looks weird
-    height: "100%",
-  },  
-  northumbriaLogo: {
-    flex: 0,
-    width: 0, // if undefined it looks weird
-    height: "150%",
-  },   
-  scrollContent: {
-    flexGrow: 1, // Add this line
-    paddingTop: 50,
-    paddingLeft: 20,
-    paddingRight: 20,
-    paddingBottom: 0,
-  },
-
-  chartRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 20,
-  },
-  
-  yAxisLabelWrapper: {
-    position: 'absolute',
-    top: '55%',
-    left: -70, // or tweak based on visual alignment
-    transform: [{ translateY: -25 }], // half of height to center
-    justifyContent: 'center',
-    alignItems: 'center',
-    zIndex: 10,
-  },
-
-  yAxisLabelWrapperMs: {
-    position: 'absolute',
-    top: '50%',
-    left: -70, // Adjust to fine-tune position
-    transform: [{ translateY: -25 }],
-    justifyContent: 'center',
-    alignItems: 'center',
-    zIndex: 10,
-  },
-  
-  yAxisLabel: {
     transform: [{ rotate: '-90deg' }],
     fontSize: 14,
     color: 'black',
     textAlign: 'center',
   },
-
+  imagecontainer: {
+    flexDirection: 'row',
+    height: 100,
+    marginBottom: 60,
+    width: '100%',
+  },
+  logo: {
+    flex: 1,
+    width: 0,
+    height: '100%',
+  },
+  northumbriaLogo: {
+    flex: 0,
+    width: 0,
+    height: '150%',
+  },
+  scrollContent: {
+    flexGrow: 1,
+    paddingTop: 50,
+    paddingLeft: 20,
+    paddingRight: 20,
+    paddingBottom: 0,
+  },
+  chartRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  yAxisLabelWrapper: {
+    position: 'absolute',
+    top: '55%',
+    left: -70,
+    transform: [{ translateY: -25 }],
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 10,
+  },
+  yAxisLabelWrapperMs: {
+    position: 'absolute',
+    top: '50%',
+    left: -70,
+    transform: [{ translateY: -25 }],
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 10,
+  },
   legendContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -853,13 +850,11 @@ const styles = StyleSheet.create({
     width: 10,
     height: 10,
     borderRadius: 5,
-    backgroundColor: '#FF0000',   // same red as overlay
+    backgroundColor: '#FF0000',
     marginRight: 6,
   },
   legendLabel: {
     fontSize: 12,
     color: '#000',
   },
-  
-  
 });

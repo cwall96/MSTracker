@@ -32,7 +32,7 @@ const CycleStatus = () => {
   const selectedBinary = useRef(null);
     
   const dropdownTest = [];
-  for (let i = 1; i < 51; i++) {
+  for (let i = 1; i < 36; i++) {
     dropdownTest.push({ label: `${i}`, value: `${i}` });
   }
   const bleedingBoxes = [

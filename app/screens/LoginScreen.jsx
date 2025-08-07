@@ -8,6 +8,11 @@ import BackgroundGradient from 'components/BackgroundGradient';
 import { doc, setDoc } from 'firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+import * as Notifications from 'expo-notifications';
+import * as Device from 'expo-device';
+import { Platform } from 'react-native';
+
+
 const LoginScreen = () => {
   const [username, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -27,6 +32,41 @@ const LoginScreen = () => {
       shortened.length = 1;
       return shortened.toString();
     }
+
+    const registerForPushNotificationsAsync = async () => {
+          if (Platform.OS === 'web') return;
+
+          if (!Device.isDevice) {
+            alert('Must use a physical device for push notifications');
+            return;
+          }
+
+          const { status: existingStatus } = await Notifications.getPermissionsAsync();
+          let finalStatus = existingStatus;
+
+          if (existingStatus !== 'granted') {
+            const { status } = await Notifications.requestPermissionsAsync();
+            finalStatus = status;
+          }
+
+          if (finalStatus !== 'granted') {
+            alert('Push notification permissions denied');
+            return;
+          }
+
+          const tokenData = await Notifications.getExpoPushTokenAsync();
+          const token = tokenData.data;
+
+          const user = firebaseAuth.currentUser;
+          if (user) {
+            await setDoc(doc(firebaseData, 'pushTokens', user.uid), {
+              token,
+              email: user.email,
+              updatedAt: new Date().toISOString(),
+            });
+            console.log('📲 Push token saved:', token);
+          }
+    };
 
     const signIn = async () => {
       setLoading(true);
@@ -71,7 +111,8 @@ const LoginScreen = () => {
         } else {
           throw new Error("Invalid username format: must start with 'm' for male or 'f' for female.");
         }
-    
+        await registerForPushNotificationsAsync();
+        
         // Routing based on consent
         if (hasConsented) {
           router.push('screens/MenuScreen');

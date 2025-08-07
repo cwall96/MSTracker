@@ -96,7 +96,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     padding: 20,
     justifyContent: 'flex-start',
-    gap: 10,
+    gap: 5,
   },
 
   title: {
