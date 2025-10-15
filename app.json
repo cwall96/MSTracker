@@ -45,7 +45,7 @@
         "backgroundColor": "#ffffff"
       },
       "package": "com.anonymous.MSApp",
-      "googleServicesFile": "./ios/MSTracker/GoogleService-Info.plist",
+      "googleServicesFile": "./ios/GoogleService-Info.plist",
       "useNextNotificationsApi": true
     },
     "extra": {
