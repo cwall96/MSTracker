@@ -141,7 +141,7 @@ const SelectHomonalContreceptive = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'lightcoral',
+
   },
   text: {
     fontWeight: 'bold',

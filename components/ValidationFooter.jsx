@@ -1,37 +1,58 @@
 import { StyleSheet, Text, View, Pressable, Alert } from 'react-native';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { Link, useRouter } from 'expo-router';
-import { updatedb } from 'components/BackendEssentials';
+import { updatedbFeedback } from 'components/BackendEssentials'; // ✅ use this instead
 import { getAuth } from 'firebase/auth';
 
-const ValidationFooter = ({ number, prevPage, nextPage, value, symptomName, alertMessage }) => {
+const ValidationFooter = ({
+  number,
+  prevPage,
+  nextPage,
+  value,
+  symptomName,
+  alertMessage,
+  extraData = {}, // ✅ new prop to handle extra values like msOther, text, etc.
+}) => {
   const router = useRouter();
   const auth = getAuth();
   const user = auth.currentUser;
 
-  const checker = () => {
+  const checker = async () => {
     if (value === undefined || value === null) {
-      Alert.alert(alertMessage ?? "Invalid value");
-    } else {
-      updatedb(user, symptomName, "empty", value, "empty");
+      Alert.alert(alertMessage ?? 'Invalid value');
+      return;
+    }
+
+    try {
+      if (user && symptomName) {
+        // ✅ save both main value and any extraData
+        await updatedbFeedback(user, symptomName, value, extraData);
+      }
       router.push(`/${nextPage}`);
+    } catch (error) {
+      console.error('Error saving to Firestore:', error);
+      Alert.alert('There was an error saving your response. Please try again.');
     }
   };
 
   return (
     <View style={styles.footer}>
       {prevPage ? (
-        <Link href={`/${prevPage}`}>
-          <AntDesign name="arrowleft" size={36} color="black" />
+        <Link href={`/${prevPage}`} asChild>
+          <Pressable style={styles.navButton}>
+            <AntDesign name="arrowleft" size={60} color="black" />
+            <Text style={styles.navText}>Back</Text>
+          </Pressable>
         </Link>
       ) : (
-        <View style={{ width: 36 }} /> // placeholder so number stays centered
+        <View style={{ width: 100 }} /> // keeps layout aligned if no Back
       )}
 
       <Text style={styles.number}>{number}</Text>
 
-      <Pressable onPress={checker}>
-        <AntDesign name="arrowright" size={36} color="black" />
+      <Pressable onPress={checker} style={styles.navButton}>
+        <Text style={styles.navText}>Next</Text>
+        <AntDesign name="arrowright" size={60} color="black" />
       </Pressable>
     </View>
   );
@@ -50,11 +71,20 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     backgroundColor: '#FFE1DB',
   },
-
   number: {
-    fontSize: 14,
+    fontSize: 20,
     fontWeight: 'bold',
     textAlign: 'center',
+  },
+  navButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  navText: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: 'black',
   },
 });
 

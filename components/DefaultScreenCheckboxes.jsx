@@ -6,34 +6,46 @@ import { SetSymptomBoxes } from './SymptoMScreen';
 import BackgroundGradient from 'components/BackgroundGradient';
 
 /**
- * @author: Neil Robertson
- * @version: 21/04/2025 - added gradient @author Yusaf Ashraf
+ * Optional responsive props:
+ *  uiScale: {
+ *    titleSize?: number,
+ *    textSize?: number,
+ *    optionSize?: number,
+ *    checkboxStyle?: ViewStyle,
+ *  }
+ *  containerStyle?: ViewStyle
  */
-
-const DefaultScreenCheckboxes = ({ name, subDescription, selected, setSelected }) => {
+const DefaultScreenCheckboxes = ({ name, subDescription, selected, setSelected, uiScale, containerStyle }) => {
   const boxes = SetSymptomBoxes();
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, containerStyle]}>
       <BackgroundGradient />
-      
-      {/* Title Component */}
+
       <MsTitle titleName="MS Symptoms" />
 
-      {/* Description */}
       <View style={styles.textWrapper}>
-        <Text style={styles.title}>{name}</Text>
-        <Text style={styles.subDescription}>{subDescription}</Text>
+        <Text style={[styles.title, uiScale?.titleSize ? { fontSize: uiScale.titleSize } : null]}>
+          {name}
+        </Text>
+        {!!subDescription && (
+          <Text style={[styles.subDescription, uiScale?.textSize ? { fontSize: uiScale.textSize } : null]}>
+            {subDescription}
+          </Text>
+        )}
       </View>
 
-      {/* Checkbox Buttons */}
       {boxes.map((item) => (
         <View key={item.id} style={styles.checkboxWrapper}>
           <CheckboxButton
-            value={item.id}
+            value={item.id}                     // "0b".."6b"
             selected={selected}
             description={item.description}
             onPress={setSelected}
+            // pass scale to the button container if supported
+            style={uiScale?.checkboxStyle}
+            // if CheckboxButton supports textStyle prop, this will scale its label
+            textStyle={uiScale?.optionSize ? { fontSize: uiScale.optionSize } : undefined}
           />
         </View>
       ))}
@@ -42,32 +54,11 @@ const DefaultScreenCheckboxes = ({ name, subDescription, selected, setSelected }
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'space-around',
-    paddingVertical: 50,
-  },
-  textWrapper: {
-    alignSelf: 'center',
-    alignItems: 'center',
-    width: '85%', // Adjusted width to center the text better
-    marginVertical: -10,
-  },
-  title: {
-    fontWeight: 'bold',
-    fontSize: 16,
-    textAlign: 'center',
-  },
-  subDescription: {
-    fontSize: 16,
-    marginTop: 4,
-    textAlign: 'center',
-  },
-  checkboxWrapper: {
-    alignSelf: 'center',
-    width: '95%',
-    marginBottom: 5,
-  },
+  container: { flex: 1, justifyContent: 'space-around', paddingVertical: 50 },
+  textWrapper: { alignSelf: 'center', alignItems: 'center', width: '85%', marginVertical: -10 },
+  title: { fontWeight: 'bold', fontSize: 16, textAlign: 'center' },
+  subDescription: { fontSize: 16, marginTop: 4, textAlign: 'center' },
+  checkboxWrapper: { alignSelf: 'center', width: '95%', marginBottom: 5 },
 });
 
 export default DefaultScreenCheckboxes;

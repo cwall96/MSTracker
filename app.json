@@ -11,7 +11,6 @@
       "tsconfigPaths": true
     },
     "plugins": [
-      "expo-router",
       [
         "expo-build-properties",
         {
@@ -30,12 +29,11 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.anonymous.MSApp",
+      "googleServicesFile": "./ios/MSTracker/GoogleService-Info.plist",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       },
@@ -47,10 +45,10 @@
         "backgroundColor": "#ffffff"
       },
       "package": "com.anonymous.MSApp",
-      "googleServicesFile": "./google-services.json"
+      "googleServicesFile": "./google-services.json",
+      "useNextNotificationsApi": true
     },
     "extra": {
-      "router": {},
       "eas": {
         "projectId": "885611b3-07d6-43e9-b4b2-750cb4d73e07"
       }

@@ -33,9 +33,10 @@ const ValidationFirstPageFooter = ({ number, nextPage, selectedA, selectedB, sym
   return (
     <View style={styles.footer}>
       <Text style={styles.number}>{number}</Text>
-      <Pressable onPress={() => checker()}>
-          <AntDesign name="arrowright" size={36} color="black" />
-      </Pressable>
+      <Pressable onPress={checker} style={styles.navButton}>
+              <Text style={styles.navText}>Next</Text>
+              <AntDesign name="arrowright" size={60} color="black" />
+            </Pressable>
     </View>
   );
 };
@@ -59,6 +60,17 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
     flex: 1, // fill available space
+  },
+
+  navButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  navText: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: 'black',
   },
 });
 

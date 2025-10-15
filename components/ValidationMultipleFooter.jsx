@@ -45,10 +45,12 @@ const ValidationMultipleFooter = ({ number, nextPage, selectedA, selectedB, sele
   return (
     <View style={styles.footer}>
       <Text style={styles.number}>{number}</Text>
-      <Pressable onPress={() => checker()}>
-          <AntDesign name="arrowright" size={36} color="black" />
-      </Pressable>
-    </View>
+      <Pressable onPress={checker} style={styles.navButton}>
+              <Text style={styles.navText}>Next</Text>
+              <AntDesign name="arrowright" size={60} color="black" />
+            </Pressable>
+          </View>
+   
   );
 };
 
@@ -70,6 +72,16 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: 'bold',
     textAlign: 'center',
+  },
+  navButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  navText: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: 'black',
   },
 });
 

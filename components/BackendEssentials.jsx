@@ -1,92 +1,92 @@
 import { firebaseAuth, firebaseData } from 'firebaseconfig';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
 
+// YYYY-MM-DD
+const formatDateISO = (date) => date.toISOString().split('T')[0];
 
-    const formatDateISO = (date) => {
-      const isoString = date.toISOString();
-      const formattedDate = isoString.split("T")[0];
-      return formattedDate;
-    }
-  
-    const currentDate = new Date();
-  
-    const splitName = (username) => {
-      const shortened = username.split("@");
-      shortened.length = 1;
-      return shortened.toString();
-    }
+// Optional helper you already had
+const splitName = (username) => {
+  const shortened = username.split('@');
+  shortened.length = 1;
+  return shortened.toString();
+};
 
-// this is the default func to store data on backend
-    const updatedb = async (user,severity,impact,selectedA,selectedB) => {
-      
-      
-      // days need to have both numbers returned, 2 != 29 so if data pertaining to day, don't truncate value
-      if (severity.includes("Day")){
-          
-          
-          if (selectedB !== "empty"){ // if using 2 datapoints, else: give param of selectedB as "empty"
-            await setDoc(doc(firebaseData, 'users', (user.email.concat(formatDateISO(currentDate)))), {
-              [severity] : Number(selectedA),// IDs have number + letter to distinguish severity
-              [impact] : Number(selectedB.charAt(0))   // and impact, charAt to get only number
-            }, { merge: true });
-          }
-            else{ // some pages only 3 datapoints
-              await setDoc(doc(firebaseData, 'users', (user.email.concat(formatDateISO(currentDate)))), {
-                [severity] : Number(selectedA),
-              }, { merge: true });              
-        }
-      }
-      else{
-      {
-        
-        if (selectedB !== "empty"){
-        await setDoc(doc(firebaseData, 'users', (user.email.concat(formatDateISO(currentDate)))), {
-          [severity] : Number(selectedA.charAt(0)),
-          [impact] : Number(selectedB.charAt(0))
-        }, { merge: true });
-      }
-        else{ // some pages only 3 datapoints
-          await setDoc(doc(firebaseData, 'users', (user.email.concat(formatDateISO(currentDate)))), {
-            [severity] : Number(selectedA.charAt(0)),
-          }, { merge: true });        
-        }
-      }
-    } 
+// --- Normalisers ---
+const isEmpty = (v) => v === null || v === undefined || v === 'empty' || v === '';
+// "6b" -> 6, "29" -> 29, "Luteal" -> "Luteal"
+const normalise = (val) => {
+  if (isEmpty(val)) return null;
+  const s = val.toString();
+  const m = s.match(/\d+/);
+  return m ? Number(m[0]) : s.trim();
+};
+
+// ------------------------------
+// Default numeric/string writer
+// ------------------------------
+const updatedb = async (user, severity, impact, selectedA, selectedB) => {
+  const currentDate = new Date();
+  const docRef = doc(firebaseData, 'users', user.email.concat(formatDateISO(currentDate)));
+
+  // Days should remain full numbers (e.g., 29); normalise also covers "6b" -> 6, hormones -> string
+  const A = normalise(selectedA);
+  const B = normalise(selectedB);
+
+  const payload = {};
+  if (A !== null) payload[severity] = A;
+  if (impact && B !== null) payload[impact] = B;
+
+  await setDoc(docRef, payload, { merge: true });
+};
+
+// ------------------------------
+// Feedback writer (supports BOTH signatures):
+// 1) Legacy: updatedbFeedback(user, otherSymptomsName, feedbackTextName, isOtherSymptoms, feedbackText)
+// 2) New:    updatedbFeedback(user, symptomName, value, extraData)
+// ------------------------------
+const updatedbFeedback = async (...args) => {
+  const currentDate = new Date();
+  const [user] = args;
+  const docRef = doc(firebaseData, 'users', user.email.concat(formatDateISO(currentDate)));
+
+  let payload = {};
+
+  if (args.length >= 5 && typeof args[3] !== 'object') {
+    // Legacy signature
+    const [, otherSymptomsName, feedbackTextName, isOtherSymptoms, feedbackText] = args;
+    const yn = normalise(isOtherSymptoms); // "1"/"0" -> 1/0
+    if (yn !== null) payload[otherSymptomsName] = yn;
+    if (!isEmpty(feedbackText)) payload[feedbackTextName] = feedbackText.toString();
+  } else {
+    // New signature
+    const [, symptomName, value, extraData = {}] = args;
+    const main = normalise(value);
+    if (main !== null) payload[symptomName] = main;
+    Object.entries(extraData || {}).forEach(([k, v]) => {
+      const nv = normalise(v);
+      if (nv !== null) payload[k] = nv;
+    });
   }
 
-// this func is used for screens with a yes/no and then corresponding text is returned on yes
-    const updatedbFeedback = async (user,otherSymptomsName,feedbackTextName,isOtherSymptoms,feedbackText) => {
-      
-      
+  await setDoc(docRef, payload, { merge: true });
+};
 
-      if (isOtherSymptoms == 1){ // if they answered yes to feedback text
-      await setDoc(doc(firebaseData, 'users', (user.email.concat(formatDateISO(currentDate)))), {
-        [otherSymptomsName] : Number(isOtherSymptoms),
-        [feedbackTextName] : {feedbackText}   
-      }, { merge: true });}
-      else{ // no feedback text
-        await setDoc(doc(firebaseData, 'users', (user.email.concat(formatDateISO(currentDate)))), {
-          [otherSymptomsName] : Number(isOtherSymptoms),
-        }, { merge: true });}        
-      }
-    
-//this func is used when the stored data is a string in 
-      const updatedbMisc = async (user,key,value) => {
-        await setDoc(doc(firebaseData, 'users', (user.email.concat(formatDateISO(currentDate)))), {
-          [key] : value
+// ------------------------------
+// String writer (for non-numeric data)
+// ------------------------------
+const updatedbMisc = async (user, key, value) => {
+  const currentDate = new Date();
+  const docRef = doc(firebaseData, 'users', user.email.concat(formatDateISO(currentDate)));
+  if (isEmpty(key)) return;
+  await setDoc(docRef, { [key]: value }, { merge: true });
+};
 
-        }, { merge: true });}
-   
+// ------------------------------
+// Retrieve stored data
+// ------------------------------
+const getdb = async (user, desiredDate) => {
+  const checkData = await getDoc(doc(firebaseData, 'users', user.email.concat(desiredDate)));
+  return checkData.data();
+};
 
-    const getdb = async (user,desiredDate) => {
-      const checkData = await getDoc(doc(firebaseData, 'users', (user.email.concat(desiredDate))));
-      return checkData.data();
-      
-    }
-    
-  
-
-
-
-export {updatedb,updatedbFeedback, getdb,updatedbMisc, formatDateISO}
-
+export { updatedb, updatedbFeedback, getdb, updatedbMisc, formatDateISO };

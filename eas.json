@@ -14,8 +14,12 @@
       "channel": "preview"
     },
     "production": {
-      "autoIncrement": true,
-      "channel": "production"
+      "distribution": "store",
+      "ios": {
+        "simulator": false
+      },
+      "channel": "production",
+      "autoIncrement": true
     }
   },
   "submit": {

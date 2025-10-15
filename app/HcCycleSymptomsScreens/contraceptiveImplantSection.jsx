@@ -93,7 +93,6 @@ const ContraceptiveImplantSection = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'lightcoral',
   },
   text: {
     textAlign: 'center',

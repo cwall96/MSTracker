@@ -26,16 +26,27 @@ const ValidationCheckboxFooter = ({ number, prevPage, nextPage, selectedA, selec
   }
 
   return (
-    <View style={styles.footer}>
-      <Link href={`/${prevPage}`}>
-        <AntDesign name="arrowleft" size={36} color="black" />
-      </Link>
-      <Text style={styles.number}>{String(number)}</Text>
-      <Pressable onPress={checker}>
-        <AntDesign name="arrowright" size={36} color="black" />
+     <View style={styles.footer}>
+      {prevPage ? (
+        <Link href={`/${prevPage}`} asChild>
+          <Pressable style={styles.navButton}>
+            <AntDesign name="arrowleft" size={60} color="black" />
+            <Text style={styles.navText}>Back</Text>
+          </Pressable>
+        </Link>
+      ) : (
+        <View style={{ width: 100 }} /> // keeps layout aligned if no Back
+      )}
+
+      <Text style={styles.number}>{number}</Text>
+
+      <Pressable onPress={checker} style={styles.navButton}>
+        <Text style={styles.navText}>Next</Text>
+        <AntDesign name="arrowright" size={60} color="black" />
       </Pressable>
     </View>
   );
+  
 };
 
 const styles = StyleSheet.create({
@@ -56,6 +67,17 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: 'bold',
     textAlign: 'center',
+  },
+
+  navButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  navText: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: 'black',
   },
 });
 

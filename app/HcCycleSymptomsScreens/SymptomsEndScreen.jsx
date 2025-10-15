@@ -246,7 +246,6 @@ const handleNavigation = (destination) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'lightcoral',
   },
   contentContainer: {
     flexGrow: 1,

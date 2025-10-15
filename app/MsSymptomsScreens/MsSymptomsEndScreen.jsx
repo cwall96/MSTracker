@@ -121,7 +121,8 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'flex-start',
-    backgroundColor: 'lightcoral',
+    backgroundGradientFrom: "#FFA388",
+    backgroundGradientTo: "#FFE1DB",
     padding: 20,
   },
   button: {

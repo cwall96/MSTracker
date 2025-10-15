@@ -128,7 +128,7 @@ const contraceptivePatchSection = () => {
 const styles = StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: 'lightcoral',
+
     },
     text: {
       textAlign: 'center',
@@ -149,4 +149,3 @@ const styles = StyleSheet.create({
   });
 
 export default contraceptivePatchSection
-// Copy paste this for slides 43-44

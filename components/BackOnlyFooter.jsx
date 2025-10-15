@@ -1,20 +1,24 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
 import { Link } from 'expo-router';
 
 const BackOnlyFooter = ({ number, prevPage }) => {
   return (
     <View style={styles.footer}>
-      <Link href={`/${prevPage}`}>
-        <AntDesign name="arrowleft" size={36} color="black" />
-      </Link>
+    <Link href={`/${prevPage}`} asChild>
+      <Pressable style={styles.navButton} hitSlop={8}>
+        <AntDesign name="arrowleft" size={60} color="black" />
+        <Text style={styles.navText}>Back</Text>
+      </Pressable>
+    </Link>
 
-      <Text style={styles.number}>
-        {typeof number === 'string' || typeof number === 'number' ? number : ''}
-      </Text>
+    <Text style={styles.number}>
+      {typeof number === 'string' || typeof number === 'number' ? number : ''}
+    </Text>
 
-      <View style={styles.spacer} />
-    </View>
+    {/* keep center text perfectly centered */}
+    <View style={styles.spacer} />
+  </View>
   );
 };
 
@@ -36,6 +40,17 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: 'bold',
     textAlign: 'center',
+  },
+
+  navButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  navText: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: 'black',
   },
 });
 

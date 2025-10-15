@@ -1,10 +1,10 @@
 import './global.css';
 import React, { useEffect } from 'react';
 import * as Notifications from 'expo-notifications';
-import ReminderManager from './ReminderManager'; // Assuming this schedules reminders
+import { scheduleDailyReminder } from './ReminderManager'; // ✅ Make sure this is exported
 import TEST from 'app/screens/LoginScreen';
 
-// Optional: Configure notification behavior
+// ✅ Set up the notification handler
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowAlert: true,
@@ -22,8 +22,7 @@ export default function App() {
         return;
       }
 
-      // Start your reminder logic
-      ReminderManager.start(); // Make sure this function exists
+      //await scheduleDailyReminder();
     };
 
     initNotifications();

@@ -34,7 +34,7 @@ const StudyInformationScreen = () => {
           <Text style={styles.heading}>Study Website</Text>
           <Text style={styles.text}>
             Visit the study website by{' '}
-            <Pressable onPress={() => Linking.openURL('https://raw.githubusercontent.com/cwall96/msapp/main/PIS_final.pdf')}>
+            <Pressable onPress={() => Linking.openURL('https://ms-menstrualcycle.co.uk')}>
               <Text style={[styles.text, styles.textlined]}>clicking here</Text>
             </Pressable>
           </Text>
