@@ -33,7 +33,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.anonymous.MSApp",
-      "googleServicesFile": "./ios/MSTracker/GoogleService-Info.plist",
+      "googleServicesFile": "./ios/GoogleService-Info.plist",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       },
