@@ -45,7 +45,7 @@
         "backgroundColor": "#ffffff"
       },
       "package": "com.anonymous.MSApp",
-      "googleServicesFile": "./ios/GoogleService-Info.plist",
+      "googleServicesFile": "./android/app/google-services.json",
       "useNextNotificationsApi": true
     },
     "extra": {
@@ -53,9 +53,7 @@
         "projectId": "885611b3-07d6-43e9-b4b2-750cb4d73e07"
       }
     },
-    "runtimeVersion": {
-      "policy": "appVersion"
-    },
+    "runtimeVersion": "1.0.0",
     "updates": {
       "url": "https://u.expo.dev/885611b3-07d6-43e9-b4b2-750cb4d73e07"
     }
