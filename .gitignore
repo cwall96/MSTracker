@@ -1,23 +1,43 @@
+# Node / Expo
 node_modules/
 .expo/
+.expo-shared/
 dist/
-npm-debug.*
-*.jks
-*.p8
-*.p12
-*.key
-*.mobileprovision
-*.orig.*
 web-build/
-
-
-
-
-ios
-android
+npm-debug.*
 
 # macOS
 .DS_Store
 
-# Temporary files created by Metro to check the health of the file watcher
+# Temporary files created by Metro
 .metro-health-check*
+
+# --- iOS (keep source, ignore build junk) ---
+ios/build/
+ios/Pods/
+ios/**/DerivedData/
+ios/**/xcuserdata/
+ios/**/.DS_Store
+ios/**/.xcworkspace/xcuserdata/
+ios/**/*.xcuserstate
+ios/**/*.hmap
+ios/**/*.ipa
+ios/**/.moved-aside
+ios/.xcode.env.local
+
+# Keep Firebase plist tracked
+!ios/**/GoogleService-Info.plist
+
+# --- Android (keep source, ignore build junk) ---
+android/.gradle/
+android/app/build/
+android/.idea/
+android/local.properties
+android/**/captures/
+android/**/.cxx/
+android/key.properties
+android/app/*.keystore
+android/app/*.jks
+
+# Keep Firebase JSON tracked
+!android/**/google-services.json

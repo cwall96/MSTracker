@@ -9,20 +9,33 @@
       "distribution": "internal",
       "channel": "development"
     },
-    "preview": {
+    "internal": {
       "distribution": "internal",
-      "channel": "preview"
+      "channel": "internal",
+      "autoIncrement": true,
+      "android": {
+        "buildType": "app-bundle" 
+      }
     },
     "production": {
       "distribution": "store",
-      "ios": {
-        "simulator": false
-      },
       "channel": "production",
-      "autoIncrement": true
+      "autoIncrement": true,
+      "android": {
+        "buildType": "app-bundle" 
+      }
     }
   },
   "submit": {
-    "production": {}
+    "internal": {
+      "android": {
+        "track": "internal"
+      }
+    },
+    "production": {
+      "android": {
+        "track": "production"
+      }
+    }
   }
 }

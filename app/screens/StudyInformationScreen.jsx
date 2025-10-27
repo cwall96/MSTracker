@@ -70,7 +70,7 @@ const StudyInformationScreen = () => {
         <View style={styles.padded}>
           <Text style={styles.heading}>Contact</Text>
           <Text style={styles.text}>
-            If you have any questions while reporting your symptoms, please email … at email@....
+            If you have any questions while reporting your symptoms, please email: elisa.nedelec@northumbria.ac.uk or p.ansdell@northumbria.ac.uk.
           </Text>
         </View>
 

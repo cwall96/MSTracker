@@ -177,7 +177,7 @@ const handleNavigation = (destination) => {
               styles.button,
               {
                 backgroundColor: msCompleted ? '#ccc' : 'orangered',
-                marginTop: 12,
+                marginTop: 0,
               },
             ]}
             onPress={() => !msCompleted && router.push("MsSymptomsScreens/MsSymptomsStartScreen")}
@@ -252,6 +252,7 @@ const styles = StyleSheet.create({
     padding: 20,
     justifyContent: 'flex-start',
     gap:20,
+    paddingBottom: 100,
   },
   listsContainer: {
     flexDirection: 'row',

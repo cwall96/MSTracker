@@ -4,11 +4,20 @@
     "slug": "MSApp",
     "version": "1.0.0",
     "scheme": "mstracker",
-    "web": {
-      "favicon": "./assets/favicon.png"
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
     },
+    "assetBundlePatterns": ["**/*"],
     "experiments": {
       "tsconfigPaths": true
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
     },
     "plugins": [
       [
@@ -19,34 +28,37 @@
           }
         }
       ],
-      "expo-notifications"
+      "expo-notifications",
+      "expo-system-ui"
     ],
-    "orientation": "portrait",
-    "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
-    "splash": {
-      "image": "./assets/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
-    },
-    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.anonymous.MSApp",
-      "googleServicesFile": "./ios/GoogleService-Info.plist",
+      "googleServicesFile": ".GoogleService-Info.plist",
+      "userInterfaceStyle": "light",
+      "usesNotifications": true,
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
-      },
-      "usesNotifications": true
+      }
     },
     "android": {
+      "package": "com.anonymous.MSApp",
+      "googleServicesFile": "./google-services.json",
+      "useNextNotificationsApi": true,
+      "userInterfaceStyle": "light",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.anonymous.MSApp",
-      "googleServicesFile": "./android/app/google-services.json",
-      "useNextNotificationsApi": true
+      "statusBar": {
+        "translucent": true,
+        "backgroundColor": "transparent",
+        "barStyle": "dark-content"
+      },
+      "navigationBar": {
+        "translucent": true,
+        "backgroundColor": "transparent"
+      }
     },
     "extra": {
       "eas": {

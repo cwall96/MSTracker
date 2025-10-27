@@ -31,6 +31,7 @@ const WalkingMobilityScreen = () => {
   const { width } = useWindowDimensions();
   const styles = useMemo(() => getStyles(width), [width]);
   const [selected, setSelected] = useState(null); // "0b".."6b"
+  const [notes, setNotes] = useState(''); //
 
   return (
     <View style={styles.screen}>
@@ -38,6 +39,8 @@ const WalkingMobilityScreen = () => {
         name="1. Walking/ Mobility"
         selected={selected}
         setSelected={setSelected}
+        notes={notes}          // 🆕 added
+        setNotes={setNotes}    // 🆕 added
         // responsive props
         uiScale={{
           titleSize: styles.fontSizes.title,
@@ -53,7 +56,8 @@ const WalkingMobilityScreen = () => {
       <ValidationFooter
         nextPage="MsSymptomsScreens/HandFunctionDexterityScreen"
         number="1/13"
-        value={selected}              // e.g. "3b"
+        value={selected}
+        notes={notes}              
         symptomName="msWalking"
         alertMessage="Please select a score for Walking/Mobility"
       />

@@ -1,42 +1,33 @@
-import { Pressable, StyleSheet, Text, View, TouchableOpacity, Alert} from 'react-native';
+import React from 'react';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
-import { Link, useRouter } from 'expo-router';
-import {updatedb} from 'components/BackendEssentials';
+import { useRouter } from 'expo-router';
+import { updatedbMisc } from 'components/BackendEssentials';
 import { getAuth } from 'firebase/auth';
 
-// Validation used in severity and daily impact checkboxes for first page
-const ValidationFirstPageFooter = ({ number, nextPage, selectedA, selectedB, symptomName }) => {
-  
+const FirstPageFooter = ({ number, nextPage, nameKey, value }) => {
   const auth = getAuth();
   const user = auth.currentUser;
-  
-  const severity = symptomName + "Severity"
-  const impact = symptomName + "Impact"  
+  const router = useRouter();
 
-  const router = useRouter()
-
-  // Checks if user has not checked a checkbox and returns corresponding error message and updates database
-  function checker() {
-          if (selectedA === null) {
-              Alert.alert("Please select a severity")
-          }
-          else if (selectedB === null) {
-            Alert.alert("Please select an impact on daily life")
-              
-          } else {
-            // Sends data to database and pushes next page
-            updatedb(user,severity,impact,selectedA,selectedB)
-            router.push(`/${nextPage}`)
-          }
+  const goNext = () => {
+    try {
+      if (nameKey !== undefined && user) {
+        updatedbMisc(user, nameKey, value);
       }
+    } finally {
+      router.push(`/${nextPage}`);
+    }
+  };
 
   return (
     <View style={styles.footer}>
       <Text style={styles.number}>{number}</Text>
-      <Pressable onPress={checker} style={styles.navButton}>
-              <Text style={styles.navText}>Next</Text>
-              <AntDesign name="arrowright" size={60} color="black" />
-            </Pressable>
+
+      <Pressable onPress={goNext} style={styles.navButton}>
+        <Text style={styles.navText}>Next</Text>
+        <AntDesign name="arrow-right" size={60} color="black" />
+      </Pressable>
     </View>
   );
 };
@@ -44,24 +35,26 @@ const ValidationFirstPageFooter = ({ number, nextPage, selectedA, selectedB, sym
 const styles = StyleSheet.create({
   footer: {
     position: 'absolute',
-    bottom: 0,
     left: 0,
     right: 0,
-    paddingHorizontal: 18, // prevents clipping of right arrow
+    bottom: 0,
+
+    paddingHorizontal: 18,  // match Validation footer spacing
     paddingVertical: 10,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between', // clean left/right alignment
-    backgroundColor: '#FFE1DB',
-  },
+    justifyContent: 'space-between',
 
+    backgroundColor: '#FFE1DB',
+    zIndex: 10,
+    elevation: 4,
+  },
   number: {
     fontSize: 14,
     fontWeight: 'bold',
     textAlign: 'center',
-    flex: 1, // fill available space
+    flex: 1, // balances layout and keeps number centered
   },
-
   navButton: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -74,5 +67,4 @@ const styles = StyleSheet.create({
   },
 });
 
-
-export default ValidationFirstPageFooter;
+export default FirstPageFooter;

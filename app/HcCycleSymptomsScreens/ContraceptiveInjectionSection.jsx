@@ -87,8 +87,6 @@ const ContraceptiveInjectionSection = () => {
         />
       )}
 
-        
-
         <NormalFooter
         prevPage="HcCycleSymptomsScreens/SelectHomonalContreceptive"
         nextPage="HcCycleSymptomsScreens/multipleQuestionsBeginning"

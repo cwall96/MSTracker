@@ -81,7 +81,7 @@ const styles = StyleSheet.create({
   northumbriaLogo: {
     flex: 1,
     width: 0, // if undefined it looks weird
-    height: '150%',
+    height: '100%',
   },
 });
 

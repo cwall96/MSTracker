@@ -9,6 +9,7 @@ import BackOnlyFooter from 'components/BackOnlyFooter';
 import { getAllUserSymptomData } from 'components/BackendEssentials';
 import CustomPicker from 'components/CustomPicker';
 import { Circle } from 'react-native-svg';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -473,14 +474,12 @@ export default function MySymptomsScreen() {
     
    
     return (
-      <View style={{ flex: 1}}>
-        <BackgroundGradient />
-        <ScrollView
-            contentContainerStyle={[
-              styles.scrollContent // Keep the padding for the footer if needed
-            ]}
-            showsVerticalScrollIndicator={false}
-          >
+      <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }} edges={['bottom']}>
+        <BackgroundGradient style={StyleSheet.absoluteFillObject} />
+         <ScrollView
+        contentContainerStyle={{ paddingTop: 50, paddingHorizontal: 20, paddingBottom: 0 }} // footer height
+        showsVerticalScrollIndicator={false}
+      >
           <Text style={styles.title}>
             {isMenstrual ? "Menstrual Cycle Symptoms" : "Hormonal Cycle Symptoms"}
           </Text>
@@ -738,7 +737,7 @@ export default function MySymptomsScreen() {
           </View>
         </ScrollView>
         <BackOnlyFooter prevPage="screens/MenuScreen" />
-      </View>
+      </SafeAreaView>
     );
   }
 }
@@ -758,7 +757,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   padded: {
-    paddingTop: 10,
+    paddingTop: 20,
   },
   yAxisLabelContainerMenstrual: {
     position: 'absolute',
@@ -798,7 +797,7 @@ const styles = StyleSheet.create({
   imagecontainer: {
     flexDirection: 'row',
     height: 100,
-    marginBottom: 60,
+    marginBottom: 100,
     width: '100%',
   },
   logo: {
@@ -816,7 +815,7 @@ const styles = StyleSheet.create({
     paddingTop: 50,
     paddingLeft: 20,
     paddingRight: 20,
-    paddingBottom: 0,
+    paddingBottom: 20,
   },
   chartRow: {
     flexDirection: 'row',

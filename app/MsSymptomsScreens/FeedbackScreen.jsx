@@ -5,7 +5,8 @@ import MsTitle from 'components/MsTitle';
 import ValidationFooter from 'components/ValidationFooter';
 import BackgroundGradient from 'components/BackgroundGradient';
 import { getAuth } from 'firebase/auth';
-import { SetSymptomBoxes } from 'components/SymptoMScreen'; // ✅ Use your 0–6b rating boxes
+import CheckboxButton from 'components/CheckboxButton';
+import { SetSymptomBoxes } from 'components/SymptoMScreen';
 
 const auth = getAuth();
 const user = auth.currentUser;
@@ -28,14 +29,13 @@ const FeedbackScreen = () => {
     'Anxiety',
   ];
 
-  const [checked, setChecked] = useState(null); // Yes/No for "other symptoms"
-  const [text, setText] = useState(''); // text field
-  const [msOther, setMsOther] = useState(null); // numeric value (0–6)
+  const [checked, setChecked] = useState(null);
+  const [text, setText] = useState('');
+  const [msOther, setMsOther] = useState(null);
   const maxLength = 300;
 
   const symptoMScreenBoxes = SetSymptomBoxes();
 
-  // helper to extract number (e.g. "3b" → 3)
   const extractNumber = (id) => parseInt(id.replace(/\D/g, ''), 10);
 
   return (
@@ -74,24 +74,22 @@ const FeedbackScreen = () => {
 
         {/* Yes/No checkboxes */}
         <View style={styles.checkboxWrapper}>
-          <View style={styles.checkboxContainer}>
-            <Checkbox
-              status={checked === '1' ? 'checked' : 'unchecked'}
-              onPress={() => setChecked('1')}
-              color="#E97132"
-              uncheckedColor="#E97132"
+          <View style={styles.checkboxRow}>
+            <CheckboxButton
+              value="1"
+              selected={checked}
+              description="Yes"
+              onPress={setChecked}
             />
-            <Text style={styles.checkboxLabel}>Yes</Text>
           </View>
 
-          <View style={styles.checkboxContainer}>
-            <Checkbox
-              status={checked === '0' ? 'checked' : 'unchecked'}
-              onPress={() => setChecked('0')}
-              color="#E97132"
-              uncheckedColor="#E97132"
+          <View style={styles.checkboxRow}>
+            <CheckboxButton
+              value="0"
+              selected={checked}
+              description="No"
+              onPress={setChecked}
             />
-            <Text style={styles.checkboxLabel}>No</Text>
           </View>
         </View>
 
@@ -104,13 +102,13 @@ const FeedbackScreen = () => {
 
             {symptoMScreenBoxes.map((item) => (
               <View key={item.id} style={styles.checkboxContainer}>
-                <Checkbox
-                  status={msOther === extractNumber(item.id) ? 'checked' : 'unchecked'}
-                  onPress={() => setMsOther(extractNumber(item.id))}
-                  color="#E97132"
-                  uncheckedColor="#E97132"
+                <CheckboxButton
+                  value={item.id}
+                  selected={msOther !== null ? `${msOther}b` : null}
+                  description={item.description}
+                  onPress={(id) => setMsOther(extractNumber(id))}
+                  textStyle={styles.checkboxLabel}
                 />
-                <Text style={styles.checkboxLabel}>{item.description}</Text>
               </View>
             ))}
 
@@ -135,7 +133,6 @@ const FeedbackScreen = () => {
         )}
       </ScrollView>
 
-      {/* Footer that stores Yes/No, msOther (as number), and text */}
       <ValidationFooter
         prevPage="MsSymptomsScreens/AnxietyScreen"
         nextPage="MsSymptomsScreens/MsSymptomsEndScreen"
@@ -147,8 +144,8 @@ const FeedbackScreen = () => {
           msOther: msOther,
           otherSymptomText: text,
         }}
-  />
-      </>
+      />
+    </>
   );
 };
 
@@ -162,7 +159,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     padding: 20,
     justifyContent: 'flex-start',
-    gap: 20,
+    gap: 10,
   },
   listsContainer: {
     flexDirection: 'row',
@@ -184,10 +181,14 @@ const styles = StyleSheet.create({
   },
   text: {
     color: 'black',
+    flexShrink: 1,
+    flexWrap: 'wrap',
   },
   heading: {
     fontWeight: 'bold',
     fontSize: 14,
+    marginTop: 10,
+    marginBottom: 8,
   },
   textInput: {
     width: '100%',
@@ -196,8 +197,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff',
     fontSize: 14,
     color: 'black',
-    marginVertical: 20,
+    marginVertical: 10,
     padding: 10,
+    marginBottom: 100,
   },
   characterCounter: {
     textAlign: 'center',
@@ -206,15 +208,21 @@ const styles = StyleSheet.create({
   },
   checkboxWrapper: {
     flexDirection: 'column',
-    gap: 10,
+    gap: 12,
     paddingVertical: 10,
   },
   checkboxContainer: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
+    width: '90%',
+    alignSelf: 'center',
+    marginVertical: 6,
     paddingHorizontal: 10,
   },
   checkboxLabel: {
+    flexShrink: 1,
+    flexWrap: 'wrap',
+    width: 0,            // ← forces wrapping inside flex row
     fontSize: 16,
     color: 'black',
     paddingLeft: 10,

@@ -1,75 +1,30 @@
-# ---- General ----
+# OSX
+#
 .DS_Store
-Thumbs.db
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-*.swp
 
-# Node
-node_modules/
-package-lock.json
-yarn.lock
-pnpm-lock.yaml
+# Xcode
+#
+build/
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+xcuserdata
+*.xccheckout
+*.moved-aside
+DerivedData
+*.hmap
+*.ipa
+*.xcuserstate
+project.xcworkspace
+.xcode.env.local
 
-# Env (commit only the ones you intend)
-.env
-.env.*.local
-!.env.example
-
-# ---- Expo / Metro ----
-.expo/
-.expo-shared/
-dist/
-web-build/
+# Bundle artifacts
 *.jsbundle
-.expo-env.local
 
-# ---- iOS (keep the project tracked) ----
-# Project stays in VCS, ignore only build outputs & user files
-ios/build/
-ios/Pods/
-ios/**/DerivedData/
-ios/**/xcuserdata/
-ios/**/.DS_Store
-ios/**/.xcworkspace/xcuserdata/
-ios/**/*.xcuserstate
-ios/**/*.hmap
-ios/**/*.ipa
-ios/**/.moved-aside
-# Local Xcode env file
-ios/.xcode.env.local
-
-# Ensure Firebase file is INCLUDED (belt-and-suspenders)
-!ios/**/GoogleService-Info.plist
-
-# ---- Android (keep the project tracked) ----
-android/.gradle/
-android/.idea/
-android/local.properties
-android/**/build/
-android/**/captures/
-android/**/.cxx/
-android/**/release/
-android/**/debug/
-# Signing artifacts – never commit real keys
-android/app/*.keystore
-android/app/*.jks
-android/key.properties
-
-# ---- CocoaPods (already covered by ios/Pods/, but for safety) ----
-Pods/
-
-# ---- Fastlane & CI clutter (if you use fastlane) ----
-fastlane/report.xml
-fastlane/Preview.html
-fastlane/screenshots/**/*.png
-fastlane/test_output/
-
-# ---- Misc Tooling ----
-coverage/
-.junit/
-tmp/
-temp/
+# CocoaPods
+/Pods/

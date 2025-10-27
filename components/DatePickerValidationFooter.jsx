@@ -10,7 +10,7 @@ const DatePickerValidationFooter = ({ number, prevPage, nextPage, value, symptom
   const user = auth.currentUser;
 
   if (alertMessage === undefined) {
-    alertMessage = "Invalid value";
+    alertMessage = 'Invalid value';
   }
 
   function checker() {
@@ -24,16 +24,24 @@ const DatePickerValidationFooter = ({ number, prevPage, nextPage, value, symptom
 
   return (
     <View style={styles.footer}>
-      <Link href={`/${prevPage}`}>
-        <AntDesign name="arrowleft" size={36} color="black" />
+      {/* BACK button with label */}
+      <Link href={`/${prevPage}`} asChild>
+        <Pressable style={styles.navButton} hitSlop={8}>
+          <AntDesign name="arrow-left" size={60} color="black" />
+          <Text style={styles.navText}>Back</Text>
+        </Pressable>
       </Link>
 
+      {/* centred number */}
       <Text style={styles.number}>
         {typeof number === 'string' || typeof number === 'number' ? number : ''}
       </Text>
 
-      <Pressable onPress={checker}>
-        <AntDesign name="arrowright" size={36} color="black" />
+      {/* NEXT button - calls checker exactly as you wanted */}
+      <Pressable onPress={checker} style={styles.navButton} hitSlop={8}>
+        <Text style={styles.navText}>Next</Text>
+        <AntDesign name="arrow-right" size={60} color="black" />
+        
       </Pressable>
     </View>
   );
@@ -45,17 +53,33 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    paddingHorizontal: 16,
+
+    paddingHorizontal: 18,
     paddingVertical: 10,
+
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+
     backgroundColor: '#FFE1DB',
+    zIndex: 100,
+    elevation: 4,
   },
   number: {
     fontSize: 18,
     fontWeight: 'bold',
     textAlign: 'center',
+    flex: 1, // keeps number centred between Back and Next
+  },
+  navButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  navText: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: 'black',
   },
 });
 

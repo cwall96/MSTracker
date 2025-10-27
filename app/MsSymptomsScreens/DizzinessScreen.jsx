@@ -25,6 +25,7 @@ const VisionScreen = () => {
   const { width } = useWindowDimensions();
   const styles = useMemo(() => getStyles(width), [width]);
   const [selected, setSelected] = useState(null); // "0b".."6b"
+  const [notes, setNotes] = useState(''); //
 
   return (
     <View style={styles.screen}>
@@ -33,6 +34,8 @@ const VisionScreen = () => {
         subDescription="Off-balance, ‘spinning’ / vertigo"
         selected={selected}
         setSelected={setSelected}
+        notes={notes}          // 🆕 added
+        setNotes={setNotes}    // 🆕 added
         uiScale={{
           titleSize: styles.fontSizes.title,
           textSize: styles.fontSizes.body,
@@ -49,6 +52,7 @@ const VisionScreen = () => {
         nextPage="MsSymptomsScreens/CognitiveFunctionScreen"
         number="9/13"
         value={selected}           // e.g. "3b"
+        notes={notes}      
         symptomName="msDizziness"
         alertMessage="Please select a score for Dizziness"
       />

@@ -1,10 +1,13 @@
 import './global.css';
 import React, { useEffect } from 'react';
+import './firebaseconfig'; 
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import { StatusBar } from 'expo-status-bar';
 import * as Notifications from 'expo-notifications';
-import { scheduleDailyReminder } from './ReminderManager'; // ✅ Make sure this is exported
+import { scheduleDailyReminder } from './ReminderManager';
 import TEST from 'app/screens/LoginScreen';
 
-// ✅ Set up the notification handler
+// ✅ Notification handler
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowAlert: true,
@@ -22,11 +25,18 @@ export default function App() {
         return;
       }
 
-      //await scheduleDailyReminder();
+      // await scheduleDailyReminder();
     };
 
     initNotifications();
   }, []);
 
-  return <TEST />;
+  return (
+    <SafeAreaProvider>
+      <SafeAreaView style={{ flex: 1, backgroundColor: '#FAD4C0' }}>
+        <StatusBar style="dark" />
+        <TEST />
+      </SafeAreaView>
+    </SafeAreaProvider>
+  );
 }

@@ -8,6 +8,8 @@ import { updatedbFeedback, getdb } from 'components/BackendEssentials';
 import { getAuth } from 'firebase/auth';
 import { firebaseAuth } from 'firebaseconfig';
 import { router } from 'expo-router';
+import CheckboxButton from 'components/CheckboxButton';
+
 
 const makeRF = (width) => (size) => {
   // iPhone 12 width baseline (390); clamp between 0.85x and 1.25x
@@ -203,25 +205,21 @@ const SymptomsEndScreen = () => {
 
         <View style={styles.checkboxWrapper}>
           <View style={styles.checkboxContainer}>
-            <Checkbox
-              status={checked === '1' ? 'checked' : 'unchecked'}
+            <CheckboxButton
+              value="1"
+              selected={checked}
+              description="Yes"
               onPress={() => setChecked('1')}
-              color="#E97132"
-              uncheckedColor="#E97132"
-              style={styles.checkbox}
             />
-            <Text style={styles.checkboxLabel}>Yes</Text>
           </View>
 
           <View style={styles.checkboxContainer}>
-            <Checkbox
-              status={checked === '0' ? 'checked' : 'unchecked'}
+            <CheckboxButton
+              value="0"
+              selected={checked}
+              description="No"
               onPress={() => setChecked('0')}
-              color="#E97132"
-              uncheckedColor="#E97132"
-              style={styles.checkbox}
             />
-            <Text style={styles.checkboxLabel}>No</Text>
           </View>
         </View>
 

@@ -33,6 +33,7 @@ const BladderControlScreen = () => {
   const { width } = useWindowDimensions();
   const styles = useMemo(() => getStyles(width), [width]);
   const [selected, setSelected] = useState(null); // "0b".."6b"
+  const [notes, setNotes] = useState('');
 
   return (
     <View style={styles.screen}>
@@ -41,6 +42,8 @@ const BladderControlScreen = () => {
         subDescription="Urinary urgence, frequency, hesitancy"
         selected={selected}
         setSelected={setSelected}
+        notes={notes}          // 🆕 added
+        setNotes={setNotes}    // 🆕 added
         // responsive props to scale text and hit areas
         uiScale={{
           titleSize: styles.fontSizes.title,
@@ -59,6 +62,7 @@ const BladderControlScreen = () => {
         nextPage="MsSymptomsScreens/FatigueScreen"
         number="6/13"
         value={selected}              // e.g. "3b" (backend normalises to 3)
+        notes={notes} 
         symptomName="msBladder"
         alertMessage="Please select a score for Bladder control"
       />

@@ -31,7 +31,7 @@ const getStyles = (width) => {
 const HandFunctionDexterityScreen = () => {
   const { width } = useWindowDimensions();
   const styles = useMemo(() => getStyles(width), [width]);
-
+  const [notes, setNotes] = useState('');
   const [selected, setSelected] = useState(null); // "0b".."6b"
 
   return (
@@ -41,6 +41,8 @@ const HandFunctionDexterityScreen = () => {
         subDescription="Hand coordination, hand tremors"
         selected={selected}
         setSelected={setSelected}
+        notes={notes}          // 🆕 added
+        setNotes={setNotes}    // 🆕 added
         // responsive props passed to the checkbox screen
         uiScale={{
           titleSize: styles.fontSizes.title,
@@ -59,6 +61,7 @@ const HandFunctionDexterityScreen = () => {
         nextPage="MsSymptomsScreens/SpasticityStiffnessScreen"
         number="2/13"
         value={selected}                 // e.g. "3b"
+        notes={notes} 
         symptomName="msHandFunctionDexterity"
         alertMessage="Please select a score for Hand function / Dexterity"
       />

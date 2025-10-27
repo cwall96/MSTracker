@@ -34,7 +34,7 @@ if (nameKey === undefined){
           }
         }}
       >
-        <AntDesign name="arrowright" size={60} color="black" />
+        <AntDesign name="arrow-right" size={60} color="black" />
       </Pressable>
     </View>
   );
@@ -56,7 +56,7 @@ if (nameKey === undefined){
           }
         }}
       >
-        <AntDesign name="arrowright" size={60} color="black" />
+        <AntDesign name="arrow-right" size={60} color="black" />
       </Pressable>
     </View>
   );  

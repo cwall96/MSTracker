@@ -37,7 +37,7 @@ const getStyles = (width) => {
 const SensorySymptomsScreen = () => {
   const { width } = useWindowDimensions();
   const styles = useMemo(() => getStyles(width), [width]);
-
+  const [notes, setNotes] = useState(''); //
   const [selected, setSelected] = useState(null); // "0b".."6b"
 
   return (
@@ -47,6 +47,8 @@ const SensorySymptomsScreen = () => {
         subDescription="Numbness, tingling, or burning"
         selected={selected}
         setSelected={setSelected}
+        notes={notes}          // 🆕 added
+        setNotes={setNotes}    // 🆕 added
         // responsive props to scale text and hit areas
         uiScale={{
           titleSize: styles.fontSizes.title,
@@ -64,7 +66,8 @@ const SensorySymptomsScreen = () => {
         prevPage="MsSymptomsScreens/BodilyPainScreen"
         nextPage="MsSymptomsScreens/BladderControlScreen"
         number="5/13"
-        value={selected}                 // e.g., "3b" (backend normalises to 3)
+        value={selected}
+        notes={notes}// e.g., "3b" (backend normalises to 3)
         symptomName="msSensorySymptom"
         alertMessage="Please select a score for Sensory symptoms"
       />

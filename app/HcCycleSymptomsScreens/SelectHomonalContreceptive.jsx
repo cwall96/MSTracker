@@ -71,11 +71,6 @@ const SelectHomonalContreceptive = () => {
 
     }
     
-
-
-
-
-
     const contraceptiveBoxes = [
         {
           id: '1',
@@ -105,7 +100,7 @@ const SelectHomonalContreceptive = () => {
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
       <BackgroundGradient/>
-      <MsTitle titleName={"Hormonal Contraceptive Cycle status"} />
+      <MsTitle titleName={"Hormonal Contraceptive Cycle Status"} />
 
       <View style={styles.space} />
 
@@ -123,18 +118,12 @@ const SelectHomonalContreceptive = () => {
         />
       ))}
       
- 
       <Footer
       nextPage= {route}
       nameKey = "contraceptiveMethod"
       value = {contraceptiveMethod.current}
       />
-
-
     </ScrollView>
-    
-    
-    
   )
 }
 

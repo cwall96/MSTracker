@@ -25,6 +25,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 20,
     paddingHorizontal: 10,
+    width: '100%'
   },
   checkbox: {
     transform: [{ scale: 0.2 }], // 👈 smaller checkbox
@@ -36,6 +37,7 @@ const styles = StyleSheet.create({
     color: 'black',
     flexWrap: 'wrap',
     paddingLeft: 10,
+    
   },
 });
 

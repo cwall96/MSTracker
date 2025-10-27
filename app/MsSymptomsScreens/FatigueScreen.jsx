@@ -37,6 +37,7 @@ const FatigueScreen = () => {
   const { width } = useWindowDimensions();
   const styles = useMemo(() => getStyles(width), [width]);
   const [selected, setSelected] = useState(null); // "0b".."6b"
+  const [notes, setNotes] = useState(''); //
 
   return (
     <View style={styles.screen}>
@@ -44,6 +45,8 @@ const FatigueScreen = () => {
         name="7. Fatigue"
         selected={selected}
         setSelected={setSelected}
+        notes={notes}          // 🆕 added
+        setNotes={setNotes}    // 🆕 added
         // responsive props
         uiScale={{
           titleSize: styles.fontSizes.title,
@@ -62,6 +65,7 @@ const FatigueScreen = () => {
         nextPage="MsSymptomsScreens/VisionScreen"
         number="7/13"
         value={selected}        // e.g. "3b" (backend normalises to 3)
+        notes={notes}     
         symptomName="msFatigue" // <-- corrected key
         alertMessage="Please select a score for Fatigue"
       />

@@ -32,7 +32,7 @@ const getStyles = (width) => {
 const CognitiveFunctionScreen = () => {
   const { width } = useWindowDimensions();
   const styles = useMemo(() => getStyles(width), [width]);
-
+  const [notes, setNotes] = useState(''); //
   const [selected, setSelected] = useState(null); // "0b".."6b"
 
   return (
@@ -42,6 +42,8 @@ const CognitiveFunctionScreen = () => {
         subDescription="Memory, concentration problems"
         selected={selected}
         setSelected={setSelected}
+        notes={notes}          // 🆕 added
+        setNotes={setNotes}    // 🆕 added
         // responsive props to scale text and hit areas
         uiScale={{
           titleSize: styles.fontSizes.title,
@@ -60,6 +62,7 @@ const CognitiveFunctionScreen = () => {
         nextPage="MsSymptomsScreens/DepressionScreen"
         number="10/13"
         value={selected}                 // e.g. "3b" (backend normalises to 3)
+        notes={notes}
         symptomName="msCognitiveFunction"
         alertMessage="Please select a score for Cognitive function"
       />

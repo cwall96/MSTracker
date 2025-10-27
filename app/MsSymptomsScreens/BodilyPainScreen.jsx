@@ -33,7 +33,7 @@ const BodilyPainScreen = () => {
   const { width } = useWindowDimensions();
   const styles = useMemo(() => getStyles(width), [width]);
   const [selected, setSelected] = useState(null); // "0b".."6b"
-
+  const [notes, setNotes] = useState(''); //
   return (
     <View style={styles.screen}>
       <DefaultScreenCheckboxes
@@ -41,6 +41,8 @@ const BodilyPainScreen = () => {
         subDescription="Achiness, tenderness"
         selected={selected}
         setSelected={setSelected}
+        notes={notes}          // 🆕 added
+        setNotes={setNotes}    // 🆕 added
         // responsive props to scale text and hit areas
         uiScale={{
           titleSize: styles.fontSizes.title,
@@ -59,6 +61,7 @@ const BodilyPainScreen = () => {
         nextPage="MsSymptomsScreens/SensorySymptomsScreen"
         number="4/13"
         value={selected}              // e.g. "3b" (backend normalises to 3)
+        notes={notes}
         symptomName="msBodilyPain"
         alertMessage="Please select a score for Bodily pain"
       />

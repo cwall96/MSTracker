@@ -1,64 +1,149 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  TextInput,
+  KeyboardAvoidingView,
+  ScrollView,
+  Platform,
+} from 'react-native';
 import CheckboxButton from './CheckboxButton';
 import MsTitle from './MsTitle';
 import { SetSymptomBoxes } from './SymptoMScreen';
 import BackgroundGradient from 'components/BackgroundGradient';
 
-/**
- * Optional responsive props:
- *  uiScale: {
- *    titleSize?: number,
- *    textSize?: number,
- *    optionSize?: number,
- *    checkboxStyle?: ViewStyle,
- *  }
- *  containerStyle?: ViewStyle
- */
-const DefaultScreenCheckboxes = ({ name, subDescription, selected, setSelected, uiScale, containerStyle }) => {
+const DefaultScreenCheckboxes = ({
+  name,
+  subDescription,
+  selected,
+  setSelected,
+  uiScale,
+  containerStyle,
+  notes,
+  setNotes,
+}) => {
   const boxes = SetSymptomBoxes();
 
   return (
-    <View style={[styles.container, containerStyle]}>
-      <BackgroundGradient />
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      style={{ flex: 1 }}
+    >
+      <ScrollView
+        contentContainerStyle={[styles.container, containerStyle]}
+        keyboardShouldPersistTaps="handled"
+      >
+        <BackgroundGradient />
 
-      <MsTitle titleName="MS Symptoms" />
+        <MsTitle titleName="MS Symptoms" />
 
-      <View style={styles.textWrapper}>
-        <Text style={[styles.title, uiScale?.titleSize ? { fontSize: uiScale.titleSize } : null]}>
-          {name}
-        </Text>
-        {!!subDescription && (
-          <Text style={[styles.subDescription, uiScale?.textSize ? { fontSize: uiScale.textSize } : null]}>
-            {subDescription}
+        <View style={styles.textWrapper}>
+          <Text
+            style={[
+              styles.title,
+              uiScale?.titleSize ? { fontSize: uiScale.titleSize } : null,
+            ]}
+          >
+            {name}
           </Text>
-        )}
-      </View>
+          {!!subDescription && (
+            <Text
+              style={[
+                styles.subDescription,
+                uiScale?.textSize ? { fontSize: uiScale.textSize } : null,
+              ]}
+            >
+              {subDescription}
+            </Text>
+          )}
+        </View>
 
-      {boxes.map((item) => (
-        <View key={item.id} style={styles.checkboxWrapper}>
-          <CheckboxButton
-            value={item.id}                     // "0b".."6b"
-            selected={selected}
-            description={item.description}
-            onPress={setSelected}
-            // pass scale to the button container if supported
-            style={uiScale?.checkboxStyle}
-            // if CheckboxButton supports textStyle prop, this will scale its label
-            textStyle={uiScale?.optionSize ? { fontSize: uiScale.optionSize } : undefined}
+        {boxes.map((item) => (
+          <View key={item.id} style={styles.checkboxWrapper}>
+            <CheckboxButton
+              value={item.id}
+              selected={selected}
+              description={item.description}
+              onPress={setSelected}
+              style={uiScale?.checkboxStyle}
+              textStyle={
+                uiScale?.optionSize
+                  ? { fontSize: uiScale.optionSize }
+                  : undefined
+              }
+            />
+          </View>
+        ))}
+
+        {/* Additional Notes Section */}
+        <View style={styles.notesContainer}>
+          <Text style={styles.notesLabel}>Additional information:</Text>
+          <TextInput
+            style={styles.notesInput}
+            placeholder="If you wish, you can enter additional info for this symptom here."
+            placeholderTextColor="#999"
+            multiline
+            value={notes}
+            onChangeText={setNotes}
           />
         </View>
-      ))}
-    </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: 'space-around', paddingVertical: 50 },
-  textWrapper: { alignSelf: 'center', alignItems: 'center', width: '85%', marginVertical: -10 },
-  title: { fontWeight: 'bold', fontSize: 16, textAlign: 'center' },
-  subDescription: { fontSize: 16, marginTop: 4, textAlign: 'center' },
-  checkboxWrapper: { alignSelf: 'center', width: '95%', marginBottom: 5 },
+  container: {
+    flexGrow: 1,
+    justifyContent: 'flex-start',
+    paddingVertical: 40,
+    paddingHorizontal: 20,
+  },
+  textWrapper: {
+    alignSelf: 'center',
+    alignItems: 'center',
+    width: '90%',
+    marginBottom: 20, // more breathing room under title
+  },
+  title: { 
+    fontWeight: 'bold', 
+    fontSize: 18, 
+    textAlign: 'center',
+    marginBottom: 6,
+    marginTop: 12,
+  },
+  subDescription: { 
+    fontSize: 15, 
+    textAlign: 'center', 
+    color: '#555',
+  },
+  checkboxWrapper: {
+    alignSelf: 'center',
+    width: '95%',
+    marginVertical: 8, // space between checkboxes
+  },
+  notesContainer: {
+    marginTop: 30,
+    marginBottom: 30,
+    alignSelf: 'center',
+    width: '90%',
+  },
+  notesLabel: {
+    fontWeight: '600',
+    fontSize: 15,
+    marginBottom: 8,
+  },
+  notesInput: {
+    minHeight: 100,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 10,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    textAlignVertical: 'top',
+    backgroundColor: '#fff',
+  },
 });
 
 export default DefaultScreenCheckboxes;

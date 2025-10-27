@@ -32,7 +32,7 @@ const getStyles = (width) => {
 const SpasticityStiffnessScreen = () => {
   const { width } = useWindowDimensions();
   const styles = useMemo(() => getStyles(width), [width]);
-
+  const [notes, setNotes] = useState('');
   const [selected, setSelected] = useState(null); // "0b".."6b"
 
   return (
@@ -42,6 +42,8 @@ const SpasticityStiffnessScreen = () => {
         subDescription="Muscle cramping or muscle tightness"
         selected={selected}
         setSelected={setSelected}
+        notes={notes}          // 🆕 added
+        setNotes={setNotes}    // 🆕 added
         // responsive props to scale text and hit areas
         uiScale={{
           titleSize: styles.fontSizes.title,
@@ -60,6 +62,7 @@ const SpasticityStiffnessScreen = () => {
         nextPage="MsSymptomsScreens/BodilyPainScreen"
         number="3/13"
         value={selected}                // e.g. "3b" (backend normalises to 3)
+        notes={notes} 
         symptomName="msSpasticityStiffness"
         alertMessage="Please select a score for Spasticity and stiffness"
       />

@@ -36,7 +36,7 @@ const getStyles = (width) => {
 const DepressionScreen = () => {
   const { width } = useWindowDimensions();
   const styles = useMemo(() => getStyles(width), [width]);
-
+  const [notes, setNotes] = useState(''); //
   const [selected, setSelected] = useState(null); // "0b".."6b"
 
   return (
@@ -46,6 +46,8 @@ const DepressionScreen = () => {
         subDescription="Depressed thoughts, low mood"
         selected={selected}
         setSelected={setSelected}
+        notes={notes}          // 🆕 added
+        setNotes={setNotes}    // 🆕 added
         // responsive props to scale text and hit areas
         uiScale={{
           titleSize: styles.fontSizes.title,
@@ -64,6 +66,7 @@ const DepressionScreen = () => {
         nextPage="MsSymptomsScreens/AnxietyScreen"
         number="11/13"
         value={selected}                 // e.g., "3b" (backend normalises to 3)
+        notes={notes}
         symptomName="msDepression"
         alertMessage="Please select a score for Depression"
       />

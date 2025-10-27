@@ -30,7 +30,7 @@ const ValidationCheckboxFooter = ({ number, prevPage, nextPage, selectedA, selec
       {prevPage ? (
         <Link href={`/${prevPage}`} asChild>
           <Pressable style={styles.navButton}>
-            <AntDesign name="arrowleft" size={60} color="black" />
+            <AntDesign name="arrow-left" size={60} color="black" />
             <Text style={styles.navText}>Back</Text>
           </Pressable>
         </Link>
@@ -42,7 +42,7 @@ const ValidationCheckboxFooter = ({ number, prevPage, nextPage, selectedA, selec
 
       <Pressable onPress={checker} style={styles.navButton}>
         <Text style={styles.navText}>Next</Text>
-        <AntDesign name="arrowright" size={60} color="black" />
+        <AntDesign name="arrow-right" size={60} color="black" />
       </Pressable>
     </View>
   );
